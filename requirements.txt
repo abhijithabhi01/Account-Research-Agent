@@ -1,0 +1,23 @@
+# ── Account Research Agent — Python dependencies ──────────────────────────────
+# Install with: pip install -r requirements.txt
+
+# Web framework
+flask>=3.0.0
+flask-cors>=4.0.0
+
+# HTTP & scraping
+requests>=2.31.0
+beautifulsoup4>=4.12.0
+lxml>=5.0.0
+trafilatura>=1.8.0          # best-effort article text extraction (optional)
+
+# Google ADK + Vertex AI
+google-adk>=0.5.0
+google-cloud-aiplatform>=1.60.0
+google-generativeai>=0.7.0
+
+# Retry logic
+tenacity>=8.2.0
+
+# Environment variables
+python-dotenv>=1.0.0

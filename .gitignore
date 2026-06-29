@@ -1,0 +1,31 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+.ara_cache/
+# Dependency directories
+node_modules/
+
+# Build output
+dist/
+build/
+coverage/
+
+# Environment files
+.env
+.env.*
+serviceaccount.json
+# IDE directories
+.vscode/
+.idea/
+
+# Temporary files
+*.tmp
+*.swp
+*.pid
+*.seed

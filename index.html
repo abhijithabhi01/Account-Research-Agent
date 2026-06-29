@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Account Research Agent</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet" />
+
+<style>
+/* ── TOKENS ─────────────────────────────────────────── */
+:root {
+  --ink:       #0d0d0d;
+  --paper:     #f5f2ec;
+  --rule:      #d4cfc6;
+  --accent:    #c8402a;
+  --accent2:   #1a4a6e;
+  --muted:     #7a7570;
+  --tag-bg:    #e8e3da;
+  --card-bg:   #ffffff;
+  --shadow:    0 2px 12px rgba(0,0,0,.07), 0 1px 3px rgba(0,0,0,.05);
+  --radius:    4px;
+  --mono: 'DM Mono', monospace;
+  --serif: 'DM Serif Display', Georgia, serif;
+  --sans: 'DM Sans', sans-serif;
+
+  /* source-type colours */
+  --src-company:  #2563eb;
+  --src-news:     #c8402a;
+  --src-jobs:     #059669;
+  --src-annual:   #7c3aed;
+  --src-linkedin: #0a66c2;
+  --src-registry: #b45309;
+  --src-tender:   #0891b2;
+  --src-industry: #be185d;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ── MASTHEAD ───────────────────────────────────────── */
+header {
+  border-bottom: 2px solid var(--ink);
+  padding: 0 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  background: var(--paper);
+  position: sticky; top: 0; z-index: 100;
+}
+.logo { display: flex; align-items: baseline; gap: 10px; }
+.logo-mark { font-family: var(--serif); font-size: 22px; letter-spacing: -.5px; }
+.logo-mark span { color: var(--accent); }
+.logo-tag {
+  font-family: var(--mono); font-size: 10px; color: var(--muted);
+  letter-spacing: .12em; text-transform: uppercase;
+  border: 1px solid var(--rule); padding: 2px 7px; border-radius: 2px;
+}
+.header-right { font-family: var(--mono); font-size: 11px; color: var(--muted); letter-spacing: .06em; }
+
+/* ── LAYOUT ─────────────────────────────────────────── */
+main { max-width: 960px; margin: 0 auto; padding: 60px 24px 120px; }
+
+/* ── HERO ────────────────────────────────────────────── */
+.hero { margin-bottom: 48px; }
+.hero-kicker {
+  font-family: var(--mono); font-size: 11px; color: var(--accent);
+  letter-spacing: .15em; text-transform: uppercase; margin-bottom: 12px;
+}
+.hero h1 {
+  font-family: var(--serif); font-size: clamp(36px, 5vw, 56px);
+  line-height: 1.08; letter-spacing: -.02em; margin-bottom: 16px;
+}
+.hero h1 em { font-style: italic; color: var(--accent); }
+.hero-sub { font-size: 15px; color: var(--muted); max-width: 560px; line-height: 1.7; }
+
+/* ── DATA SOURCES LEGEND ────────────────────────────── */
+.data-sources-legend {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  margin-bottom: 40px;
+}
+.ds-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 10px; border-radius: 20px;
+  font-family: var(--mono); font-size: 10.5px; letter-spacing: .06em;
+  font-weight: 500; border: 1.5px solid transparent;
+}
+.ds-chip .ds-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
+/* ── FORM CARD ──────────────────────────────────────── */
+.form-card {
+  background: var(--card-bg);
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius);
+  padding: 36px 40px;
+  box-shadow: 6px 6px 0 var(--ink);
+  margin-bottom: 48px;
+}
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+.form-row-full { margin-bottom: 24px; }
+@media (max-width: 620px) {
+  .form-row { grid-template-columns: 1fr; }
+  header { padding: 0 20px; }
+  main { padding: 40px 16px 80px; }
+  .form-card { padding: 24px 20px; }
+}
+.field { display: flex; flex-direction: column; gap: 7px; }
+.field label {
+  font-family: var(--mono); font-size: 10.5px; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--muted);
+}
+.field input {
+  border: 1.5px solid var(--rule); border-radius: var(--radius);
+  background: var(--paper); padding: 11px 14px;
+  font-family: var(--sans); font-size: 14px; color: var(--ink);
+  transition: border-color .15s, box-shadow .15s; outline: none;
+}
+.field input:focus { border-color: var(--ink); box-shadow: 3px 3px 0 var(--ink); }
+.field input::placeholder { color: #b0aba3; }
+
+.form-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 14px;
+}
+.form-note { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+.form-note::before {
+  content: ''; display: inline-block; width: 6px; height: 6px;
+  border-radius: 50%; background: var(--accent2); flex-shrink: 0;
+}
+.btn-run {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: var(--ink); color: #fff; border: none;
+  padding: 13px 28px; font-family: var(--sans); font-size: 14px;
+  font-weight: 600; letter-spacing: .01em; border-radius: var(--radius);
+  cursor: pointer; transition: transform .12s, box-shadow .12s;
+  box-shadow: 3px 3px 0 var(--accent); white-space: nowrap;
+}
+.btn-run:hover:not(:disabled) { transform: translate(-2px,-2px); box-shadow: 5px 5px 0 var(--accent); }
+.btn-run:active:not(:disabled) { transform: translate(1px,1px); box-shadow: 1px 1px 0 var(--accent); }
+.btn-run:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+.btn-run svg { width: 16px; height: 16px; }
+
+/* ── LOADING ────────────────────────────────────────── */
+.loading-state {
+  display: none; flex-direction: column; align-items: center;
+  padding: 60px 20px; text-align: center; gap: 20px;
+}
+.loading-state.active { display: flex; }
+.pulse-ring { width: 56px; height: 56px; position: relative; }
+.pulse-ring::before, .pulse-ring::after {
+  content: ''; position: absolute; inset: 0; border-radius: 50%;
+  border: 2px solid var(--accent); animation: pulse-out 1.6s ease-out infinite;
+}
+.pulse-ring::after { animation-delay: .8s; }
+.pulse-core { position: absolute; inset: 16px; background: var(--accent); border-radius: 50%; }
+@keyframes pulse-out {
+  0%   { transform: scale(.4); opacity: 1; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+.loading-label { font-family: var(--mono); font-size: 12px; color: var(--muted); letter-spacing: .1em; }
+.loading-label strong {
+  display: block; font-family: var(--sans); font-size: 16px;
+  font-weight: 600; color: var(--ink); margin-bottom: 4px; letter-spacing: 0;
+}
+.loading-sources {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 6px;
+  margin-top: 8px; max-width: 440px;
+}
+.loading-src-chip {
+  font-family: var(--mono); font-size: 10px; padding: 3px 8px;
+  border-radius: 20px; border: 1px solid currentColor; opacity: .4;
+  transition: opacity .3s;
+}
+.loading-src-chip.scanning { opacity: 1; animation: blink-scan .8s ease-in-out infinite alternate; }
+@keyframes blink-scan { from { opacity: .6; } to { opacity: 1; } }
+
+/* ── ERROR ──────────────────────────────────────────── */
+.error-box {
+  display: none; background: #fff5f4; border: 1.5px solid var(--accent);
+  border-radius: var(--radius); padding: 20px 24px; margin-bottom: 24px;
+  font-size: 14px; color: var(--accent);
+}
+.error-box.active { display: block; }
+.error-box strong { display: block; margin-bottom: 4px; }
+
+/* ── BRIEF WRAP ─────────────────────────────────────── */
+.brief-wrap {
+  display: none; opacity: 0; transform: translateY(14px);
+  transition: opacity .4s ease, transform .4s ease;
+}
+.brief-wrap.active { display: block; }
+.brief-wrap.visible { opacity: 1; transform: translateY(0); }
+
+/* ── BRIEF HEADER ───────────────────────────────────── */
+.brief-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  flex-wrap: wrap; gap: 12px; margin-bottom: 28px; padding-bottom: 20px;
+  border-bottom: 2px solid var(--ink);
+}
+.brief-meta { display: flex; flex-direction: column; gap: 4px; }
+.brief-company { font-family: var(--serif); font-size: 30px; letter-spacing: -.02em; line-height: 1.1; }
+.brief-timestamp { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+.brief-actions { display: flex; gap: 10px; align-items: flex-start; }
+.btn-action {
+  display: inline-flex; align-items: center; gap: 7px;
+  border: 1.5px solid var(--rule); background: var(--card-bg); color: var(--ink);
+  padding: 9px 16px; border-radius: var(--radius); font-family: var(--sans);
+  font-size: 12.5px; font-weight: 500; cursor: pointer;
+  transition: border-color .15s, background .15s;
+}
+.btn-action:hover { border-color: var(--ink); background: var(--tag-bg); }
+.btn-action svg { width: 14px; height: 14px; }
+
+/* ── SOURCE COVERAGE BAR ────────────────────────────── */
+.coverage-bar {
+  display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+  background: var(--card-bg); border: 1.5px solid var(--rule);
+  border-radius: var(--radius); padding: 14px 20px;
+  margin-bottom: 28px; box-shadow: var(--shadow);
+}
+.coverage-bar-label {
+  font-family: var(--mono); font-size: 10px; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--muted); margin-right: 4px; flex-shrink: 0;
+}
+.cov-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 9px; border-radius: 20px;
+  font-family: var(--mono); font-size: 10px; letter-spacing: .05em;
+  font-weight: 500; border: 1.5px solid transparent;
+}
+.cov-chip .cov-count {
+  background: rgba(0,0,0,.12); border-radius: 8px;
+  padding: 0 5px; font-size: 9px; line-height: 1.6;
+}
+
+/* ── SECTIONS ───────────────────────────────────────── */
+.brief-sections { display: flex; flex-direction: column; gap: 20px; }
+.brief-section {
+  background: var(--card-bg); border: 1.5px solid var(--rule);
+  border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow);
+  animation: slide-up .35s ease both;
+}
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.section-head {
+  display: flex; align-items: center; gap: 14px; padding: 15px 24px;
+  border-bottom: 1px solid var(--rule); background: var(--tag-bg);
+  cursor: pointer; user-select: none;
+}
+.section-num { font-family: var(--mono); font-size: 11px; color: var(--accent); font-weight: 500; letter-spacing: .06em; flex-shrink: 0; }
+.section-title { font-family: var(--sans); font-size: 13px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; flex: 1; }
+.section-chevron { color: var(--muted); transition: transform .2s; flex-shrink: 0; }
+.section-head.open .section-chevron { transform: rotate(180deg); }
+.section-body { padding: 22px 24px; display: none; font-size: 14px; line-height: 1.78; color: #2a2520; }
+.section-body.open { display: block; }
+.section-body p { margin-bottom: 10px; }
+.section-body strong { font-weight: 600; color: var(--ink); }
+.section-body ul { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.section-body ul li { padding-left: 18px; position: relative; }
+.section-body ul li::before { content: '▸'; position: absolute; left: 0; color: var(--accent); font-size: 11px; top: 3px; }
+
+/* Source tag inline pills */
+.src-tag {
+  display: inline-flex; align-items: center;
+  padding: 1px 7px; border-radius: 10px; font-family: var(--mono);
+  font-size: 9.5px; font-weight: 500; letter-spacing: .04em;
+  vertical-align: middle; margin: 0 3px;
+  border: 1px solid transparent;
+}
+.source-cite {
+  font-family: var(--mono); font-size: 11px; color: var(--accent2); opacity: .85;
+}
+.source-cite a { color: var(--accent2); text-decoration: none; }
+.source-cite a:hover { text-decoration: underline; }
+.no-signal { font-style: italic; color: var(--muted); }
+
+/* ── SALES ANGLE ────────────────────────────────────── */
+.sales-angle {
+  background: var(--accent); color: #fff; border-radius: var(--radius);
+  padding: 28px 32px; box-shadow: 6px 6px 0 rgba(13,13,13,.2);
+}
+.sales-angle-label {
+  font-family: var(--mono); font-size: 10px; letter-spacing: .18em;
+  text-transform: uppercase; opacity: .75; margin-bottom: 10px;
+}
+.sales-angle-text { font-size: 15px; line-height: 1.7; opacity: .95; }
+
+/* ── SOURCES PANEL ──────────────────────────────────── */
+.sources-panel {
+  margin-top: 32px; border: 1.5px solid var(--rule); border-radius: var(--radius);
+  background: var(--card-bg); overflow: hidden; box-shadow: var(--shadow);
+}
+.sources-header {
+  display: flex; align-items: center; gap: 8px; padding: 12px 20px;
+  background: var(--tag-bg); border-bottom: 1px solid var(--rule);
+  font-family: var(--mono); font-size: 11px; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--muted);
+}
+.sources-count {
+  margin-left: auto; background: var(--accent2); color: #fff;
+  border-radius: 10px; padding: 1px 8px; font-size: 10px;
+}
+.sources-filter {
+  display: flex; flex-wrap: wrap; gap: 6px; padding: 12px 20px;
+  border-bottom: 1px solid var(--rule); background: #faf9f7;
+}
+.sf-btn {
+  font-family: var(--mono); font-size: 10px; letter-spacing: .05em;
+  padding: 3px 10px; border-radius: 20px; border: 1.5px solid var(--rule);
+  background: var(--card-bg); cursor: pointer; transition: all .15s; color: var(--muted);
+}
+.sf-btn:hover { border-color: var(--ink); color: var(--ink); }
+.sf-btn.active { border-color: var(--ink); background: var(--ink); color: #fff; }
+.sources-list { padding: 4px 0; max-height: 420px; overflow-y: auto; }
+.source-row {
+  display: flex; align-items: flex-start; gap: 12px; padding: 11px 20px;
+  border-bottom: 1px solid var(--rule); font-size: 13px;
+  transition: background .12s; cursor: default;
+}
+.source-row:last-child { border-bottom: none; }
+.source-row:hover { background: var(--paper); }
+.source-row.hidden { display: none; }
+.source-index { font-family: var(--mono); font-size: 10px; color: var(--accent); min-width: 24px; padding-top: 2px; }
+.source-info { flex: 1; min-width: 0; }
+.source-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 2px; }
+.source-publisher { font-weight: 600; color: var(--ink); }
+.source-date { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+.source-url a {
+  font-family: var(--mono); font-size: 11px; color: var(--accent2);
+  text-decoration: none; word-break: break-all; display: block; margin-top: 2px;
+}
+.source-url a:hover { text-decoration: underline; }
+.ext-icon { flex-shrink: 0; margin-top: 3px; color: var(--muted); }
+
+/* ── DEEP SEARCH TOGGLE ─────────────────────────────── */
+.toggle-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 18px; border-radius: var(--radius);
+  background: var(--paper); border: 1.5px solid var(--rule);
+  margin-bottom: 24px; gap: 16px;
+}
+.toggle-info { display: flex; flex-direction: column; gap: 3px; }
+.toggle-label {
+  font-family: var(--sans); font-size: 13.5px; font-weight: 600; color: var(--ink);
+  display: flex; align-items: center; gap: 8px;
+}
+.toggle-label .badge {
+  font-family: var(--mono); font-size: 9px; letter-spacing: .1em;
+  text-transform: uppercase; padding: 2px 7px; border-radius: 10px;
+  background: var(--accent2); color: #fff; font-weight: 500;
+}
+.toggle-desc {
+  font-family: var(--mono); font-size: 10.5px; color: var(--muted); letter-spacing: .02em;
+}
+/* pill switch */
+.switch { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.switch-track {
+  position: absolute; inset: 0; background: var(--rule);
+  border-radius: 12px; transition: background .2s; cursor: pointer;
+}
+.switch input:checked + .switch-track { background: var(--accent2); }
+.switch-thumb {
+  position: absolute; top: 3px; left: 3px;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: #fff; transition: transform .2s; pointer-events: none;
+  box-shadow: 0 1px 3px rgba(0,0,0,.2);
+}
+.switch input:checked ~ .switch-thumb { transform: translateX(20px); }
+
+/* ── REQUIRED FIELD ERROR STATE ─────────────────────── */
+.field input.input-error {
+  border-color: var(--accent);
+  box-shadow: 3px 3px 0 var(--accent);
+}
+.field-error-msg {
+  font-family: var(--mono); font-size: 10px; color: var(--accent);
+  letter-spacing: .05em; margin-top: 2px; display: none;
+}
+.field-error-msg.visible { display: block; }
+.st-COMPANY-WEBSITE       { background: #eff6ff; color: var(--src-company);  border-color: #bfdbfe; }
+.st-NEWS                  { background: #fff5f4; color: var(--src-news);     border-color: #fecaca; }
+.st-JOB-OPENINGS          { background: #f0fdf4; color: var(--src-jobs);     border-color: #bbf7d0; }
+.st-ANNUAL-REPORT         { background: #f5f3ff; color: var(--src-annual);   border-color: #ddd6fe; }
+.st-LINKEDIN              { background: #eff6ff; color: var(--src-linkedin); border-color: #bfdbfe; }
+.st-PUBLIC-REGISTRY       { background: #fffbeb; color: var(--src-registry); border-color: #fde68a; }
+.st-TENDER-PORTAL         { background: #ecfeff; color: var(--src-tender);   border-color: #a5f3fc; }
+.st-INDUSTRY-DIR          { background: #fdf2f8; color: var(--src-industry); border-color: #fbcfe8; }
+.st-DIGITAL-TRANSFORMATION{ background: #f0fdfa; color: #0f766e;             border-color: #99f6e4; }
+
+/* coverage chip colours */
+.cc-COMPANY-WEBSITE       { background: #eff6ff; color: var(--src-company);  border-color: #93c5fd; }
+.cc-NEWS                  { background: #fff5f4; color: var(--src-news);     border-color: #fca5a5; }
+.cc-JOB-OPENINGS          { background: #f0fdf4; color: var(--src-jobs);     border-color: #86efac; }
+.cc-ANNUAL-REPORT         { background: #f5f3ff; color: var(--src-annual);   border-color: #c4b5fd; }
+.cc-LINKEDIN              { background: #eff6ff; color: var(--src-linkedin); border-color: #93c5fd; }
+.cc-PUBLIC-REGISTRY       { background: #fffbeb; color: var(--src-registry); border-color: #fcd34d; }
+.cc-TENDER-PORTAL         { background: #ecfeff; color: var(--src-tender);   border-color: #67e8f9; }
+.cc-INDUSTRY-DIR          { background: #fdf2f8; color: var(--src-industry); border-color: #f9a8d4; }
+.cc-DIGITAL-TRANSFORMATION{ background: #f0fdfa; color: #0f766e;             border-color: #5eead4; }
+
+/* legend chip dot colours */
+.dot-COMPANY-WEBSITE       { background: var(--src-company);  }
+.dot-NEWS                  { background: var(--src-news);     }
+.dot-JOB-OPENINGS          { background: var(--src-jobs);     }
+.dot-ANNUAL-REPORT         { background: var(--src-annual);   }
+.dot-LINKEDIN              { background: var(--src-linkedin); }
+.dot-PUBLIC-REGISTRY       { background: var(--src-registry); }
+.dot-TENDER-PORTAL         { background: var(--src-tender);   }
+.dot-INDUSTRY-DIR          { background: var(--src-industry); }
+.dot-DIGITAL-TRANSFORMATION{ background: #0f766e;             }
+
+/* ── STANDALONE SOURCES CARD ────────────────────────── */
+.sources-card {
+  display: none; margin-top: 48px;
+  border: 2px solid var(--ink); border-radius: var(--radius);
+  background: var(--card-bg); overflow: hidden;
+  box-shadow: 5px 5px 0 var(--accent2);
+  animation: slide-up .35s ease both;
+}
+.sources-card.active { display: block; }
+.sources-card-header {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--ink); color: #fff;
+  padding: 13px 20px; font-family: var(--mono);
+  font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
+}
+.sources-card-header svg { opacity: .7; }
+.sources-card-count {
+  margin-left: auto; background: var(--accent);
+  color: #fff; border-radius: 10px; padding: 1px 9px;
+  font-size: 10px; letter-spacing: .04em;
+}
+.sources-card-subtitle {
+  padding: 10px 20px 10px;
+  font-family: var(--mono); font-size: 10.5px; color: var(--muted);
+  letter-spacing: .03em; line-height: 1.6;
+  border-bottom: 1px solid var(--rule);
+  background: #faf9f7;
+}
+/* ── SOURCE TOOL STATUS ROWS ────────────────────────── */
+.tool-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 20px; border-bottom: 1px solid var(--rule);
+  font-size: 13px; transition: background .12s;
+}
+.tool-row:last-child { border-bottom: none; }
+.tool-row:hover { background: var(--paper); }
+.tool-status-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+}
+.tool-status-dot.ok    { background: #059669; }
+.tool-status-dot.empty { background: #f59e0b; }
+.tool-status-dot.error { background: #dc2626; }
+.tool-name { font-family: var(--mono); font-size: 11px; color: var(--ink); font-weight: 500; flex: 1; }
+.tool-items {
+  font-family: var(--mono); font-size: 10px; color: var(--muted);
+  background: var(--tag-bg); padding: 2px 8px; border-radius: 8px;
+}
+.tool-status-label {
+  font-family: var(--mono); font-size: 10px; letter-spacing: .05em;
+  padding: 2px 8px; border-radius: 8px; text-transform: uppercase;
+}
+.tool-status-label.ok    { background: #f0fdf4; color: #059669; }
+.tool-status-label.empty { background: #fffbeb; color: #b45309; }
+.tool-status-label.error { background: #fff5f4; color: #dc2626; }
+.tool-error-msg {
+  font-family: var(--mono); font-size: 10px; color: #dc2626;
+  margin-left: 4px; opacity: .8; max-width: 260px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.sources-legend-row {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  padding: 12px 20px; border-bottom: 1px solid var(--rule);
+  background: #faf9f7;
+}
+
+.sources-empty {
+  padding: 20px; font-size: 13px; color: var(--muted);
+  font-style: italic; text-align: center;
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <div class="logo-mark">ARA<span>.</span></div>
+    
+  </div>
+  <div class="header-right" id="ts"></div>
+</header>
+
+<main>
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-kicker">B2B Account Intelligence</div>
+    <h1>Research any account<br><em>in seconds.</em></h1>
+    <p class="hero-sub">
+      Enter a target company to generate a structured intelligence brief covering
+      strategy, signals, hiring, digital transformation, and pain points — powered
+      by Google ADK + Gemini, scanning verified data sources.
+    </p>
+  </div>
+
+  <!-- Data source legend -->
+  <div class="data-sources-legend" id="legend"></div>
+
+  <!-- Form -->
+  <div class="form-card">
+    <div class="form-row">
+      <div class="field">
+        <label for="inp-company">Company Name *</label>
+        <input id="inp-company" type="text" placeholder="e.g. Stripe, Infosys, TCS" autocomplete="organization" required />
+        <span class="field-error-msg" id="err-company">Company name is required.</span>
+      </div>
+      <div class="field">
+        <label for="inp-website">Website URL *</label>
+        <input id="inp-website" type="url" placeholder="https://stripe.com" autocomplete="url" required />
+        <span class="field-error-msg" id="err-website">Website URL is required.</span>
+      </div>
+    </div>
+    <!-- Deep search toggle -->
+    <!-- <div class="toggle-row">
+      <div class="toggle-info">
+        <div class="toggle-label">
+          Deep Search
+          <span class="badge">Coming soon</span>
+        </div>
+        <div class="toggle-desc">Enables a second agent pass — web scraping, filings deep-dive &amp; cross-source validation</div>
+      </div>
+      <label class="switch" title="Deep Search (coming soon)">
+        <input type="checkbox" id="tog-deep" disabled />
+        <span class="switch-track"></span>
+        <span class="switch-thumb"></span>
+      </label>
+    </div> -->
+
+    <div class="form-footer">
+      <span class="form-note">* Both fields required · Scans 8 verified source types · 2–5 minutes</span>
+      <button class="btn-run" id="btn-run" onclick="runResearch()">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="8" cy="8" r="7"/>
+          <path d="M6 5l5 3-5 3V5z" fill="currentColor" stroke="none"/>
+        </svg>
+        Generate Brief
+      </button>
+    </div>
+  </div>
+
+  <!-- Error -->
+  <div class="error-box" id="error-box">
+    <strong>Something went wrong</strong>
+    <span id="error-msg"></span>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-state" id="loading">
+    <div class="pulse-ring"><div class="pulse-core"></div></div>
+    <div class="loading-label">
+      <strong id="loading-company">Researching…</strong>
+      Scanning verified sources · Extracting signals · Compiling brief
+    </div>
+    <div class="loading-sources" id="loading-sources"></div>
+  </div>
+
+  <!-- Brief output -->
+  <div class="brief-wrap" id="brief-wrap">
+
+    <div class="brief-header">
+      <div class="brief-meta">
+        <div class="brief-company" id="brief-company-name"></div>
+        <div class="brief-timestamp" id="brief-ts"></div>
+      </div>
+      <div class="brief-actions">
+        <button class="btn-action" onclick="copyBrief()">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="5" y="5" width="8" height="9" rx="1"/>
+            <path d="M3 11V3a1 1 0 0 1 1-1h8"/>
+          </svg>
+          Copy
+        </button>
+        <button class="btn-action" onclick="downloadBrief()">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M8 2v8M5 7l3 3 3-3M2 12v1a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-1"/>
+          </svg>
+          Download
+        </button>
+      </div>
+    </div>
+
+    <!-- Source coverage bar -->
+    <div class="coverage-bar" id="coverage-bar" style="display:none">
+      <span class="coverage-bar-label">Sources scanned</span>
+      <div id="coverage-chips"></div>
+    </div>
+
+    <div class="brief-sections" id="brief-sections"></div>
+
+  </div><!-- /brief-wrap -->
+
+  <!-- ── Standalone Sources Card ── -->
+  <div class="sources-card" id="sources-card">
+    <div class="sources-card-header">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14">
+        <path d="M2 4h12M2 8h8M2 12h10" stroke-linecap="round"/>
+      </svg>
+      Data Sources Used
+      <span class="sources-card-count" id="sources-count">0</span>
+    </div>
+    <div class="sources-card-subtitle" id="sources-subtitle">
+      All citations sourced exclusively from approved free APIs: company website, SEC EDGAR,
+      Greenhouse, Financial Modeling Prep, Tavily/Serper news search, and public registries.
+    </div>
+    <div class="sources-legend-row" id="sources-legend-row"></div>
+    <div class="sources-list" id="sources-list"></div>
+    <div class="sources-empty" id="sources-empty" style="display:none">
+      No source data returned. Check that your API keys are configured and the backend is running.
+    </div>
+  </div>
+
+</main>
+
+<script>
+/* ─── Constants ───────────────────────────────────────── */
+const SOURCE_DEFS = [
+  { tag: 'COMPANY-WEBSITE',        label: 'Company Website',       short: 'Website'  },
+  { tag: 'NEWS',                   label: 'News',                  short: 'News'     },
+  { tag: 'JOB-OPENINGS',          label: 'Job Openings',          short: 'Jobs'     },
+  { tag: 'ANNUAL-REPORT',         label: 'Annual Report',         short: 'Filings'  },
+  { tag: 'DIGITAL-TRANSFORMATION',label: 'Digital / Tech Stack',  short: 'Tech'     },
+  { tag: 'PUBLIC-REGISTRY',       label: 'Public Registry',       short: 'Registry' },
+  { tag: 'TENDER-PORTAL',         label: 'Tender Portal',         short: 'Tenders'  },
+  { tag: 'INDUSTRY-DIR',          label: 'Industry Directory',    short: 'Industry' },
+  { tag: 'LINKEDIN',              label: 'LinkedIn',              short: 'LinkedIn' },
+];
+
+/* ─── Build legend ────────────────────────────────────── */
+(function buildLegend() {
+  const el = document.getElementById('legend');
+  SOURCE_DEFS.forEach(d => {
+    const chip = document.createElement('div');
+    chip.className = 'ds-chip';
+    chip.innerHTML = `<span class="ds-dot dot-${d.tag}"></span>${d.label}`;
+    el.appendChild(chip);
+  });
+})();
+
+/* ─── Build loading source chips ──────────────────────── */
+(function buildLoadingChips() {
+  const el = document.getElementById('loading-sources');
+  SOURCE_DEFS.forEach(d => {
+    const c = document.createElement('span');
+    c.className = `loading-src-chip st-${d.tag}`;
+    c.textContent = d.short;
+    c.dataset.tag = d.tag;
+    el.appendChild(c);
+  });
+  // Rotate scanning animation
+  let idx = 0;
+  setInterval(() => {
+    document.querySelectorAll('.loading-src-chip').forEach(c => c.classList.remove('scanning'));
+    const chips = document.querySelectorAll('.loading-src-chip');
+    if (chips.length) { chips[idx % chips.length].classList.add('scanning'); idx++; }
+  }, 600);
+})();
+
+/* ─── Timestamp ticker ────────────────────────────────── */
+(function tick() {
+  document.getElementById('ts').textContent =
+    new Date().toLocaleString('en-US', { month:'short', day:'numeric', year:'numeric', hour:'2-digit', minute:'2-digit' });
+  setTimeout(tick, 30000);
+})();
+
+/* ─── Enter key ───────────────────────────────────────── */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && ['inp-company','inp-website'].includes(e.target.id))
+    runResearch();
+});
+
+/* ─── State ───────────────────────────────────────────── */
+let lastBriefText = '';
+let lastCompany   = '';
+let allSources    = [];
+let activeFilter  = 'ALL';
+
+/* ─── Field validation helpers ────────────────────────── */
+function setFieldError(inputId, errId, show) {
+  const input = document.getElementById(inputId);
+  const msg   = document.getElementById(errId);
+  input.classList.toggle('input-error', show);
+  msg.classList.toggle('visible', show);
+}
+
+function clearFieldErrors() {
+  setFieldError('inp-company', 'err-company', false);
+  setFieldError('inp-website', 'err-website', false);
+}
+
+// Clear error on input
+document.getElementById('inp-company').addEventListener('input', () => setFieldError('inp-company', 'err-company', false));
+document.getElementById('inp-website').addEventListener('input', () => setFieldError('inp-website', 'err-website', false));
+
+/* ─── Main function ───────────────────────────────────── */
+async function runResearch() {
+  const company = document.getElementById('inp-company').value.trim();
+  const website = document.getElementById('inp-website').value.trim();
+
+  let hasError = false;
+  if (!company) { setFieldError('inp-company', 'err-company', true); hasError = true; }
+  if (!website) { setFieldError('inp-website', 'err-website', true); hasError = true; }
+  if (hasError) {
+    if (!company) document.getElementById('inp-company').focus();
+    else document.getElementById('inp-website').focus();
+    return;
+  }
+  clearFieldErrors();
+
+  setLoading(true, company);
+  hideError();
+  hideBrief();
+
+  try {
+    const res  = await fetch('/research', {
+      method : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body   : JSON.stringify({ company, website }),
+    });
+    const data = await res.json();
+    if (!res.ok || data.error) {
+      showError(data.error || `HTTP ${res.status}`);
+      return;
+    }
+
+    lastBriefText = data.brief;
+    lastCompany   = data.company;
+    allSources    = data.sources || [];
+    renderBrief(data);
+  } catch (err) {
+    showError('Could not reach the server. Is app.py running on port 5000?');
+  } finally {
+    setLoading(false);
+  }
+}
+
+/* ─── UI helpers ──────────────────────────────────────── */
+function setLoading(on, company = '') {
+  const btn = document.getElementById('btn-run');
+  const ld  = document.getElementById('loading');
+  btn.disabled = on;
+  if (on) {
+    document.getElementById('loading-company').textContent = `Researching "${company}"…`;
+    ld.classList.add('active');
+    btn.innerHTML = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M8 2a6 6 0 1 0 6 6" stroke-linecap="round"/></svg> Researching…`;
+  } else {
+    ld.classList.remove('active');
+    btn.innerHTML = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="8" cy="8" r="7"/><path d="M6 5l5 3-5 3V5z" fill="currentColor" stroke="none"/>
+    </svg> Generate Brief`;
+  }
+}
+function showError(msg) {
+  document.getElementById('error-msg').textContent = msg;
+  document.getElementById('error-box').classList.add('active');
+}
+function hideError() { document.getElementById('error-box').classList.remove('active'); }
+function hideBrief() {
+  document.getElementById('brief-wrap').classList.remove('active','visible');
+  document.getElementById('coverage-bar').style.display  = 'none';
+  document.getElementById('sources-card').classList.remove('active');
+}
+
+/* ─── Render brief ────────────────────────────────────── */
+function renderBrief(data) {
+  document.getElementById('brief-company-name').textContent = data.company;
+  document.getElementById('brief-ts').textContent =
+    'Generated ' + new Date(data.generated_at).toLocaleString('en-US', {
+      month:'long', day:'numeric', year:'numeric', hour:'2-digit', minute:'2-digit'
+    }) + ' UTC';
+
+  // Coverage bar
+  renderCoverage(data.coverage || {});
+
+  // Sections
+  const container = document.getElementById('brief-sections');
+  container.innerHTML = '';
+  parseBrief(data.brief).forEach((sec, i) => container.appendChild(buildSection(sec, i)));
+
+  // Sources panel — pass tool_statuses if present, fall back to legacy sources array
+  renderSources(data.tool_statuses || data.sources || []);
+
+  const w = document.getElementById('brief-wrap');
+  w.classList.add('active');
+  requestAnimationFrame(() => requestAnimationFrame(() => w.classList.add('visible')));
+  w.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* ─── Coverage bar ────────────────────────────────────── */
+function renderCoverage(coverage) {
+  const bar   = document.getElementById('coverage-bar');
+  const chips = document.getElementById('coverage-chips');
+  chips.innerHTML = '';
+  const keys = Object.keys(coverage);
+  if (!keys.length) { bar.style.display = 'none'; return; }
+
+  keys.forEach(tag => {
+    const def   = SOURCE_DEFS.find(d => d.tag === tag) || { short: tag };
+    const chip  = document.createElement('span');
+    chip.className = `cov-chip cc-${tag}`;
+    chip.innerHTML = `${def.short} <span class="cov-count">${coverage[tag]}</span>`;
+    chips.appendChild(chip);
+  });
+  bar.style.display = 'flex';
+}
+
+/* ─── Sources card — tool status rows ────────────────── */
+
+// Maps backend source keys → display labels
+const TOOL_DEFS = [
+  { key: 'company_website',      label: 'Company Website',        tag: 'COMPANY-WEBSITE' },
+  { key: 'news',                 label: 'News Search',            tag: 'NEWS'            },
+  { key: 'job_boards',           label: 'Job Boards',             tag: 'JOB-OPENINGS'    },
+  { key: 'financial_filings',    label: 'Financial Filings',      tag: 'ANNUAL-REPORT'   },
+  { key: 'linkedin_signals',     label: 'LinkedIn Signals',       tag: 'LINKEDIN'        },
+  { key: 'company_registry',     label: 'Company Registry',       tag: 'PUBLIC-REGISTRY' },
+  { key: 'tender_opportunities', label: 'Tender Opportunities',   tag: 'TENDER-PORTAL'   },
+  { key: 'industry_directory',   label: 'Industry Directory',     tag: 'INDUSTRY-DIR'    },
+];
+
+function renderSources(sources) {
+  const card   = document.getElementById('sources-card');
+  const list   = document.getElementById('sources-list');
+  const count  = document.getElementById('sources-count');
+  const legend = document.getElementById('sources-legend-row');
+  const empty  = document.getElementById('sources-empty');
+  list.innerHTML = '';
+  legend.innerHTML = '';
+  card.classList.add('active');
+
+  // sources is now an array of {source, status, item_count, fetched_at, error}
+  // keyed by the 'source' field from _ok()/_err()
+  if (!sources || !sources.length) {
+    count.textContent = '0';
+    empty.style.display = 'block';
+    return;
+  }
+
+  empty.style.display = 'none';
+
+  // Build a lookup by key
+  const byKey = {};
+  sources.forEach(s => { byKey[s.source] = s; });
+
+  let okCount = 0;
+
+  // Legend row — colored chips for tools that returned data
+  TOOL_DEFS.forEach(def => {
+    const rec = byKey[def.key];
+    if (!rec || rec.status !== 'ok') return;
+    const chip = document.createElement('span');
+    chip.className = `cov-chip cc-${def.tag}`;
+    chip.innerHTML = `${SOURCE_DEFS.find(d => d.tag === def.tag)?.short || def.label} <span class="cov-count">${rec.item_count}</span>`;
+    legend.appendChild(chip);
+    okCount++;
+  });
+
+  count.textContent = okCount;
+
+  // Tool rows — one per tool, in fixed order
+  TOOL_DEFS.forEach(def => {
+    const rec    = byKey[def.key];
+    const status = rec ? rec.status : 'error';
+    const items  = rec ? (rec.item_count || 0) : 0;
+    const err    = rec ? (rec.error || '') : 'not called';
+    const ts     = rec ? (rec.fetched_at ? rec.fetched_at.slice(11,19) + ' UTC' : '') : '';
+
+    const row = document.createElement('div');
+    row.className = 'tool-row';
+
+    let rightHtml = '';
+    if (status === 'ok') {
+      rightHtml = `<span class="tool-items">${items} item${items !== 1 ? 's' : ''}</span>
+                   <span class="tool-status-label ok">ok</span>`;
+    } else if (status === 'empty') {
+      rightHtml = `<span class="tool-status-label empty">empty</span>`;
+    } else {
+      const shortErr = err.length > 50 ? err.slice(0, 50) + '…' : err;
+      rightHtml = `<span class="tool-status-label error">error</span>
+                   <span class="tool-error-msg" title="${err}">${shortErr}</span>`;
+    }
+
+    row.innerHTML = `
+      <span class="tool-status-dot ${status}"></span>
+      <span class="tool-name">${def.label}</span>
+      ${ts ? `<span class="tool-items" style="opacity:.5">${ts}</span>` : ''}
+      ${rightHtml}`;
+    list.appendChild(row);
+  });
+}
+
+/* ─── Section definitions (JSON key → display) ────────── */
+const SECTION_DEFS = [
+  { num: '1.1', key: 'company_summary',                label: 'Company Summary'                  },
+  { num: '1.2', key: 'current_initiatives',            label: 'Current Initiatives'              },
+  { num: '1.3', key: 'expansion_signals',              label: 'Expansion Signals'                },
+  { num: '1.4', key: 'hiring_signals',                 label: 'Hiring Signals'                   },
+  { num: '1.5', key: 'digital_transformation_signals', label: 'Digital Transformation Signals'   },
+  { num: '1.6', key: 'possible_pain_points',           label: 'Possible Pain Points'             },
+];
+
+/* ─── Parse brief — handles JSON or legacy markdown ───── */
+function parseBrief(text) {
+  // Try JSON first (new agent output)
+  try {
+    const clean = text.replace(/```(?:json)?/g, '').trim().replace(/^`+|`+$/g, '');
+    const obj   = JSON.parse(clean);
+    return SECTION_DEFS
+      .filter(def => obj[def.key])
+      .map(def => ({ num: def.num, title: def.label, body: obj[def.key], isSalesAngle: false }));
+  } catch (_) { /* fall through to markdown parser */ }
+
+  // Legacy markdown fallback (## 1.1 Company Summary …)
+  const results = [];
+  const lines   = text.split('\n');
+  let current   = null;
+  const rawSections = {};
+  const legacyDefs  = SECTION_DEFS.map(d => ({ ...d, key: d.label.toUpperCase() }));
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    let matched = false;
+    for (const def of legacyDefs) {
+      const pattern = new RegExp(`^#{0,3}\\s*${def.num.replace('.','\\.')}[\\s\\-–—:]*${def.label.split(' ')[0]}`, 'i');
+      if (pattern.test(trimmed)) {
+        current = def.key;
+        rawSections[current] = rawSections[current] || { def, lines: [] };
+        matched = true; break;
+      }
+    }
+    if (!matched && current) rawSections[current].lines.push(line);
+  }
+
+  for (const def of legacyDefs) {
+    const raw = rawSections[def.key];
+    if (raw) results.push({ num: def.num, title: def.label, body: raw.lines.join('\n').trim(), isSalesAngle: false });
+  }
+  if (!results.length) results.push({ num: '', title: 'Intelligence Brief', body: text, isSalesAngle: false });
+  return results;
+}
+
+/* ─── Build section DOM ───────────────────────────────── */
+function buildSection(sec, idx) {
+  const el = document.createElement('div');
+  el.className = 'brief-section';
+  el.style.animationDelay = `${idx * 60}ms`;
+
+  const head = document.createElement('div');
+  head.className = 'section-head open';
+  head.innerHTML = `
+    <span class="section-num">${sec.num}</span>
+    <span class="section-title">${sec.title}</span>
+    <svg class="section-chevron" viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M4 6l4 4 4-4"/>
+    </svg>`;
+
+  const body = document.createElement('div');
+  body.className = 'section-body open';
+  body.innerHTML = renderSectionBody(sec.body);
+
+  head.addEventListener('click', () => { head.classList.toggle('open'); body.classList.toggle('open'); });
+  el.appendChild(head);
+  el.appendChild(body);
+  return el;
+}
+
+/* ─── Render section body — splits on sentences + tags ── */
+function renderSectionBody(text) {
+  if (!text) return '<p class="no-signal">No public signal found.</p>';
+
+  // Split into sentences on '. ' or '.\n', keeping the period
+  const sentences = text
+    .replace(/\n+/g, ' ')
+    .split(/(?<=\.)\s+/)
+    .map(s => s.trim())
+    .filter(Boolean);
+
+  if (!sentences.length) return '<p class="no-signal">No public signal found.</p>';
+
+  return sentences.map(s => `<p>${inlineFormat(s)}</p>`).join('');
+}
+
+
+// Map agent JSON citation keys → SOURCE_DEFS tags
+const CITE_TAG_MAP = {
+  'company_website':      'COMPANY-WEBSITE',
+  'news':                 'NEWS',
+  'job_boards':           'JOB-OPENINGS',
+  'financial_filings':    'ANNUAL-REPORT',
+  'linkedin_signals':     'LINKEDIN',
+  'company_registry':     'PUBLIC-REGISTRY',
+  'tender_opportunities': 'TENDER-PORTAL',
+  'industry_directory':   'INDUSTRY-DIR',
+};
+
+function inlineFormat(t) {
+  // Bold
+  t = t.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  // Italic
+  t = t.replace(/\*(.+?)\*/g, '<em>$1</em>');
+
+  // Agent JSON citation tags [company_website] [news] etc. (lowercase_underscore)
+  t = t.replace(/\[([a-z_]+)\]/g, (m, raw) => {
+    const tag = CITE_TAG_MAP[raw];
+    if (!tag) return m; // not a known cite tag, leave as-is
+    const def = SOURCE_DEFS_JS.find(d => d.tag === tag);
+    return `<span class="src-tag st-${tag}">${def ? def.short : raw}</span>`;
+  });
+
+  // Legacy uppercase tags [COMPANY-WEBSITE] etc.
+  t = t.replace(/\[(COMPANY-WEBSITE|NEWS|JOB-OPENINGS|ANNUAL-REPORT|LINKEDIN|PUBLIC-REGISTRY|TENDER-PORTAL|INDUSTRY-DIR|DIGITAL-TRANSFORMATION)\]/g, (m, tag) => {
+    const def = SOURCE_DEFS_JS.find(d => d.tag === tag);
+    return `<span class="src-tag st-${tag}">${def ? def.short : tag}</span>`;
+  });
+
+  // Source citations with URL
+  t = t.replace(/\(Source:\s*([^,)]+),\s*([^,)]+),\s*(https?:\/\/[^\s)]+)\)/g,
+    '<span class="source-cite">(Source: $1, $2, <a href="$3" target="_blank" rel="noopener">$3</a>)</span>');
+  // Source citations without URL
+  t = t.replace(/\(Source:\s*([^)]+)\)/g, '<span class="source-cite">(Source: $1)</span>');
+  // No signal
+  t = t.replace(/No public signal found\./g, '<span class="no-signal">No public signal found.</span>');
+  return t;
+}
+
+// Need SOURCE_DEFS accessible inside inlineFormat
+const SOURCE_DEFS_JS = SOURCE_DEFS;
+
+/* ─── Copy & Download ─────────────────────────────────── */
+function copyBrief() {
+  navigator.clipboard.writeText(lastBriefText).then(() => showToast('Copied to clipboard'));
+}
+function downloadBrief() {
+  const safe = lastCompany.toLowerCase().replace(/\s+/g,'_');
+  const ts   = new Date().toISOString().slice(0,10);
+  const header = `ACCOUNT INTELLIGENCE BRIEF\nTarget   : ${lastCompany}\nGenerated: ${new Date().toUTCString()}\n${'─'.repeat(60)}\n\n`;
+  const blob = new Blob([header + lastBriefText], { type:'text/plain' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `brief_${safe}_${ts}.txt`;
+  a.click();
+}
+
+/* ─── Toast ───────────────────────────────────────────── */
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.textContent = msg;
+  Object.assign(t.style, {
+    position:'fixed', bottom:'30px', left:'50%', transform:'translateX(-50%)',
+    background:'#0d0d0d', color:'#fff', padding:'10px 22px', borderRadius:'4px',
+    fontFamily:"'DM Mono',monospace", fontSize:'12px', zIndex:'9999',
+    boxShadow:'0 4px 16px rgba(0,0,0,.25)',
+  });
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2200);
+}
+</script>
+</body>
+</html>
